@@ -6,7 +6,8 @@ import spriteRunRight from './assets/spriteRunRight.png'
 import spriteStandLeft from './assets/spriteStandLeft.png'
 import spriteStandRight from './assets/spriteStandRight.png'
 import background from './assets/background.png'
-import hills from './assets/hills.png'
+import hills from './assets/hills1.png'
+import clouds from './assets/clouds.png'
 import { useEffect } from 'react'
 
 function App() {
@@ -119,6 +120,50 @@ function App() {
       }
     }
 
+    class Background {
+      constructor({ x, y, image }) {
+        this.position = { x, y }
+        this.image = image
+        this.width = image.width
+        this.height = image.height
+      }
+
+      draw() {
+        c.drawImage(this.image, this.position.x, this.position.y, canvas.width * 5, canvas.height)
+      }
+    }
+
+    class Clouds {
+      constructor({ x, y, image }) {
+        this.position = { x, y }
+        this.image = image
+        this.width = image.width
+        this.height = image.height
+      }
+
+      draw() {
+        c.drawImage(this.image, this.position.x, this.position.y, this.width, canvas.height / 8)
+      }
+    }
+
+    class DrawText {
+      constructor({ x, y, text }) {
+        this.position = { x, y }
+        this.text = text
+      }
+
+      draw() {
+        console.log('text', this.text)
+        let gradient = c.createLinearGradient(0, 0, canvas.width, 0);
+        gradient.addColorStop("0", " magenta");
+        gradient.addColorStop("0.5", "blue");
+        gradient.addColorStop("1.0", "red");
+        // Fill with gradient
+        c.fillStyle = gradient;
+        c.fillText(this.text, this.position.x, this.position.y)
+      }
+    }
+
     function createImage(imageSrc) {
       const image = new Image()
       image.src = imageSrc
@@ -139,6 +184,7 @@ function App() {
     let platforms = []
     let genericObjects = []
     let scrollOffset
+    let score
 
     function init() {
       player = new Player()
@@ -158,8 +204,9 @@ function App() {
       ]
 
       genericObjects = [
-        new GenericObject({ x: -1, y: -1, image: createImage(background) }),
-        new GenericObject({ x: -1, y: 140, image: createImage(hills) }),
+        new Background({ x: -1, y: -1, image: createImage(background) }),
+        new GenericObject({ x: -1, y: 150, image: createImage(hills) }),
+        new Clouds({ x: -1, y: 50, image: createImage(clouds) }),
         // new GenericObject({ x: 1000, y: 400, image: createImage(platform) }),
         // new GenericObject({ x: 1400, y: 300, image: createImage(platform) }),
         // new GenericObject({ x: 1800, y: 600, image: createImage(platform) }),
@@ -168,6 +215,9 @@ function App() {
       ]
 
       scrollOffset = 0
+
+      score = new DrawText(100, 100, scrollOffset + "")
+      score.draw()
     }
 
     const animate = () => {
@@ -182,6 +232,8 @@ function App() {
       platforms.forEach(platform => {
         platform.draw()
       })
+
+      score.draw()
 
       player.update()
 
@@ -328,7 +380,6 @@ function App() {
 
   useEffect(() => {
     drawCanvas()
-    console.log('useeffect called')
   }, [])
   return (
     <div className="App h-screen w-screen flex justify-center items-center bg-black">
